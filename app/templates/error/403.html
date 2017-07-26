@@ -1,0 +1,21 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}403{% endblock %}
+{% block styles %}
+    {{ super() }}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+    <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block body_attribs %} class="gray-bg"{% endblock %}
+{% block body %}
+    <div class="middle-box text-center animated fadeInDown">
+        <h1>403</h1>
+        <h3 class="font-bold">Forbidden!</h3>
+        <div class="error-desc">
+            <br/><a href="{{ url_for('main.index') }}" class="btn btn-primary m-t">主页</a>
+        </div>
+    </div>
+{% endblock %}

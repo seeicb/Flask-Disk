@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="{{ url_for("admin.index") }}" class="navbar-brand">后台管理</a>
+            </div>
+
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for("admin.index") }}"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;用户管理</a>
+                    </li>
+
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ current_user.username }}
+                            <span class="caret"></span>
+                        </a>
+                        {% if current_user.is_authenticated %}
+                        <ul class="dropdown-menu" aria-labelledby="dLabel">
+                            <li><a href="{{ url_for('auth.user_info',username=current_user.username) }}"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;个人主页</a></li>
+                            <li><a href="{{ url_for('auth.change_pass') }}"><span class="glyphicon glyphicon-lock"></span>&nbsp;&nbsp;修改密码</a></li>
+                            {% if current_user.username=='admin' %}
+                            <li><a href="{{ url_for('admin.index') }}"><span
+                               class="glyphicon glyphicon-star"></span>&nbsp;&nbsp;后台管理</a>
+                            </li>
+                            {% endif %}
+                            <li><a href="{{ url_for('auth.setting') }}"><span class="glyphicon glyphicon-cog"></span>&nbsp;&nbsp;设置</a></li>
+                        </ul>
+                        {% endif %}
+                    </li>
+                    <li><a href="{{ url_for('auth.logout') }}"><span class="glyphicon glyphicon-off"></span>&nbsp;&nbsp;退出</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}

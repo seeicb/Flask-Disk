@@ -1,0 +1,33 @@
+{% extends "base.html"%}
+
+{% block title %} 文件上传{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/webuploader.css') }}">
+{% endblock %}
+
+
+{% block content %}
+<div id="post-container" class="container">
+    <div id="uploader" class="wu-example">
+        <div id="thelist" class="uploader-list"></div>
+        <div class="btns">
+            <div id="picker">选择文件</div>
+            <button id="ctlBtn" class="btn btn-default">开始上传</button>
+        </div>
+        <div class="info"></div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+    var csrftoken = "{{ csrf_token() }}"
+</script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/webuploader.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/upload_start.js') }}"></script>
+
+{% endblock %}

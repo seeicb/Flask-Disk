@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/dataTables.bootstrap.css') }}"  >
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="wrapper wrapper-content animated">
+        <div class="row">
+            <div class="col-md-2">
+        <div class="well" style="max-width: 340px; padding: 8px 0;">
+            <ul class="nav nav-list">
+                <li><a href="{{ url_for('main.index') }}">全部文件</a></li>
+                <li><a href="{{ url_for('main.category',cate='image') }}">图片</a></li>
+                <li><a href="{{ url_for('main.category',cate='doc') }}">文档</a></li>
+                <li><a href="{{ url_for('main.category',cate='video') }}">视频</a></li>
+                <li><a href="{{ url_for('main.category',cate='audio') }}">音乐</a></li>
+                <li><a href="{{ url_for('main.category',cate='other') }}">其它</a></li>
+                <li><a href="{{ url_for('main.share_manage') }}">我的分享</a></li>
+                <li><a href="{{ url_for('main.recycle') }}">回收站</a></li>
+            </ul>
+        </div>
+    </div>
+            <div class="col-sm-10">
+                <br>
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+
+                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                            <thead>
+                            <tr>
+                                <th>文件名</th>
+                                <th>大小</th>
+                                <th>到期日期</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in fileobj %}
+                                <tr class="gradeX">
+                                    {% if item[0].is_recycle==True %}
+                                    <td>
+                                        <a href="{{ url_for('file.recycle_detail',id=item[0].file_id) }}">{{ item[0].filename|e }}</a>
+                                    </td>
+                                    {% else %}
+                                    <td>
+                                        <a href="{{ url_for('file.file_detail',id=item[0].file_id) }}">{{ item[0].filename|e }}</a>
+                                    </td>
+                                    {% endif %}
+                                    <td>{{ item[0].file_size|filesizeformat }}</td>
+                                    <td>{{ item[1].recycle_time|dateformat }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th>文件名</th>
+                                <th>大小</th>
+                                <th>到期日期</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+    {{ super() }}
+    <!-- Data Tables -->
+    <script src="//cdn.bootcss.com/datatables/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.bootcss.com/datatables/1.10.13/js/dataTables.bootstrap.min.js"></script>
+    <script src="{{ url_for('static',filename='js/file-size.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.dataTables-example').dataTable(
+                {
+                    "searching": false,
+                    "columnDefs": [
+                        {"type": "file-size", targets: 1},
+                        {"width": "50%", "targets": 0},
+                        {"width": "20%", "targets": 1},
+                        {"width": "30%", "targets": 2}
+                    ],
+                    "language": {
+                        "lengthMenu": "每页 _MENU_ 条记录",
+                        "zeroRecords": "没有找到记录",
+                        "info": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 )",
+                        "infoEmpty": "无记录",
+                        "infoFiltered": "(从 _MAX_ 条记录过滤)",
+                        "paginate": {
+                            "next": "下一页",
+                            "previous": "上一页"
+                        }
+                    }
+                });
+        });
+    </script>
+{% endblock %}

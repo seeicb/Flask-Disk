@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import "auth/wtf.html" as wtf %}
+
+
+{% block navbar %}
+        <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="{{ url_for("main.index") }}" class="navbar-brand">Flask 云盘</a>
+            </div>
+        </div>
+        </nav>
+{% endblock %}
+{% block page_content %}
+{{ wtf.quick_form(form,form_type="horizontal") }}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }} </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+{% endwith %}
+{% endblock %}

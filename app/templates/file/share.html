@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/sweetalert.css') }}">
+    {{ super() }}
+
+{% endblock %}
+{% block navbar %}
+        <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="{{ url_for("main.index") }}" class="navbar-brand">Flask 云盘</a>
+            </div>
+        </div>
+        </nav>
+{% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-8 col-sm-offset-2 text-center">
+        <div class="btn-group btn-group-justified">
+                <a id="share_down" href="{{ url_for('file.down_url',url=shareobj.share_url) }}"
+                   class="btn btn-default btn-info "
+                   role="button">下载</a>
+                {% if (current_user.user_id==fileobj.user_id) %}
+                    <a id="cancel_share" href="#" class="btn btn-default btn-success " role="button">取消分享</a>
+                {% endif %}
+        </div>
+            <br>
+            <br>
+    <table class="table table-bordered table-striped">
+                <tbody>
+                <tr>
+                    <td>文件名</td>
+                    <td>{{ fileobj.filename }}</td>
+
+                </tr>
+                <tr>
+                    <td>文件大小</td>
+                    <td>{{ fileobj.file_size|filesizeformat }}</td>
+
+                </tr>
+                <tr>
+                    <td>创建时间</td>
+                    <td>{{ fileobj.create_time|dateformat }}</td>
+
+                </tr>
+                <tr>
+                    <td>文件类型</td>
+                    <td>{{ fileobj.file_mime|e }}</td>
+
+                </tr>
+                {% if fileobj.file_ext %}
+                    <tr>
+                        <td>文件后缀</td>
+                        <td>{{ fileobj.file_ext|e }}</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/sweetalert.min.js') }}"></script>
+<script>
+    $(document).ready(function () {
+        $('#cancel_share').click(function () {
+                swal({
+                        title: "您确定要取消分享吗？",
+                        type: "warning",
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        confirmButtonColor: "#33b5ff"
+                    }
+                    , function () {
+                        var csrftoken = $('meta[name=csrf-token]').attr('content')
+                        $.ajaxSetup({
+                            beforeSend: function (xhr, settings) {
+                                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                                }
+                            }
+                        });
+                        $.ajax({
+                            url: "{{ url_for('file.cancel_share') }}",
+                            type: "POST",
+                            data: {"id": {{ fileobj.file_id }}}
+                        }).done(function (data) {
+                            swal("已取消分享",'', "success");
+
+                        }).error(function (data) {
+                            swal("取消失败", "分享操作失败了!", "error");
+                        });
+                    })
+                ;
+            });
+{#        $('#share_save').click(function () {#}
+{#                swal({#}
+{#                        title: "您确定要保存文件吗？",#}
+{#                        type: "warning",#}
+{#                        showCancelButton: true,#}
+{#                        closeOnConfirm: false,#}
+{#                        confirmButtonText: "确定",#}
+{#                        cancelButtonText: "取消",#}
+{#                        confirmButtonColor: "#33b5ff"#}
+{#                    }#}
+{#                    , function () {#}
+{#                        var csrftoken = $('meta[name=csrf-token]').attr('content')#}
+{#                        $.ajaxSetup({#}
+{#                            beforeSend: function (xhr, settings) {#}
+{#                                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {#}
+{#                                    xhr.setRequestHeader("X-CSRFToken", csrftoken)#}
+{#                                }#}
+{#                            }#}
+{#                        });#}
+{#                        $.ajax({#}
+{#                            url: "{{ url_for('file.share_save') }}",#}
+{#                            type: "POST",#}
+{#                            data: {"url": {{ shareobj.share_url }}}#}
+{#                        }).done(function (data) {#}
+{#                            swal("保存成功",'', "success");#}
+{##}
+{#                        }).error(function (data) {#}
+{#                            swal("保存失败", "操作失败了!", "error");#}
+{#                        });#}
+{#                    })#}
+{#                ;#}
+{#            });#}
+    })
+
+</script>
+{% endblock %}

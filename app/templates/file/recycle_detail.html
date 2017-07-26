@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/sweetalert.css') }}">
+{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-8 col-sm-offset-2 text-center">
+            <div class="btn-group btn-group-justified">
+                    <a id="brecovery" href="#" class="btn btn-default btn-primary " role="button">恢复</a>
+                    <a id="bdelete_complete" href="#" class="btn btn-default btn-info " role="button">彻底删除</a>
+            </div>
+            <br>
+            <br>
+            <table class="table table-bordered table-striped">
+                <tbody>
+                <tr>
+                    <td>文件名</td>
+                    <td>{{ fileobj.filename }}</td>
+
+                </tr>
+                <tr>
+                    <td>文件大小</td>
+                    <td>{{ fileobj.file_size|filesizeformat }}</td>
+
+                </tr>
+                <tr>
+                    <td>创建时间</td>
+                    <td>{{ fileobj.create_time|dateformat }}</td>
+
+                </tr>
+				  <tr>
+                    <td>到期时间</td>
+                    <td>{{ recycleobj.recycle_time|dateformat }}</td>
+
+                </tr>
+                {% if fileobj.file_ext %}
+                    <tr>
+                        <td>文件后缀</td>
+                        <td>{{ fileobj.file_ext|e }}</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/sweetalert.min.js') }}"></script>
+<script>
+  function countDown(url) {
+        console.log(url);
+        if (url=='index') {
+            setTimeout(function(){
+                location.href = '{{ url_for('main.index') }}';
+            }, 1200);
+
+        }
+        else {
+            setTimeout(function(){
+                location.href = '{{ url_for('file.file_detail',id=fileobj.file_id) }}';
+            }, 1200);
+        }
+    }
+    $(document).ready(function () {
+        $('#brecovery').click(function () {
+            swal({
+                    title: "您确定要恢复吗？",
+                    type: "info",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: "恢复",
+                    cancelButtonText: "取消",
+                    confirmButtonColor: "#ff2125"
+                }
+                , function () {
+                    var csrftoken = $('meta[name=csrf-token]').attr('content')
+                    $.ajaxSetup({
+                        beforeSend: function (xhr, settings) {
+                            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                            }
+                        }
+                    });
+                    $.ajax({
+                        url: "{{ url_for('file.recovery') }}",
+                        type: "POST",
+                        data: {"id": {{ fileobj.file_id }}}
+                    }).done(function (data) {
+                        swal("恢复成功!", "浏览器将自动跳转到主页！", "success");
+                        countDown('index');
+
+                    }).error(function (data) {
+                        swal("恢复失败", "恢复操作失败了!", "error");
+                    });
+                })
+            ;
+        });
+        $('#bdelete_complete').click(function () {
+            swal({
+                    title: "您确定要彻底删除吗？",
+                    type: "warning",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    confirmButtonColor: "#ff2125"
+                }
+                , function () {
+                    var csrftoken = $('meta[name=csrf-token]').attr('content')
+                    $.ajaxSetup({
+                        beforeSend: function (xhr, settings) {
+                            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                            }
+                        }
+                    });
+                    $.ajax({
+                        url: "{{ url_for('file.delete_complete') }}",
+                        type: "POST",
+                        data: {"id": {{ fileobj.file_id }}}
+                    }).done(function (data) {
+                        swal("删除成功!", "浏览器将自动跳转到主页！", "success");
+                        countDown('index');
+
+                    }).error(function (data) {
+                        swal("操作失败", "操作失败了!", "error");
+                    });
+                })
+            ;
+        });
+    })
+
+</script>
+{% endblock %}

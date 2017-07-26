@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% import "auth/wtf.html" as wtf %}
+{% block page_content %}
+
+{#<h1>Hello,{{ current_user.username }}</h1>#}
+    <h1>修改密码</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }} </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+{% endwith %}
+<div class="col-md-4">
+    {{ wtf.quick_form(form,form_type="horizontal") }}
+</div>
+{% endblock %}

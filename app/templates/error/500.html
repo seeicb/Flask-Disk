@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}404{% endblock %}
+{% block styles %}
+    {{ super() }}
+    <link href="//cdn.bootcss.com/animate.css/3.5.0/animate.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block navbar %}
+{% endblock navbar %}
+
+{% block body_attribs %} class="gray-bg"{% endblock %}
+{% block body %}
+    <div class="middle-box text-center animated fadeInDown">
+        <h1>500</h1>
+        <h3 class="font-bold">服务器内部错误</h3>
+        <div class="error-desc">
+            <br/><a href="{{ url_for('main.index') }}" class="btn btn-primary m-t">主页</a>
+        </div>
+    </div>
+{% endblock %}

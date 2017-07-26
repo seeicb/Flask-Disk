@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% import 'auth/wtf.html' as wtf %}
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/login.css') }}">
+{% endblock %}
+{% block title %} 登录 {% endblock %}
+{% block body_attribs %} class="signin"{% endblock %}
+{% block body %}
+    <div class="signinpanel">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post" action="{{ url_for('auth.login') }}">
+                    <h4 class="text-center text-555">登录Flask 云盘</h4>
+                    {% for message in get_flashed_messages() %}
+                        <div class="alert-info alert-dismissable">
+                            {{ message }}</div>
+                    {% endfor %}
+                    <br>
+                    {{ form.hidden_tag() }}
+                    {{ wtf.form_errors(form, hiddens="only") }}
+                    {{ wtf.form_field(form.username,form_type="inline",placeholder="用户名") }}
+                    {{ wtf.form_field(form.password,form_type="inline", placeholder=" 密码") }}
+                    <div class="form-group required">
+                        {{ form.verification_code.label(class="control-label") | safe }}
+                        <label class="control-label"><img id="changeCode" src="{{ url_for('auth.captcha') }}"
+                                                          style="width:120px;height:30px;"></label>
+                    </div>
+                    {{ wtf.form_field(form.verification_code,form_type="inline",placeholder=" 验证码") }}
+                    {{ wtf.form_field(form.remember_me) }}
+                    {{ form.submit(class="btn btn-success btn-block") }}
+                </form>
+                <p class="text-muted text-center">
+                    <a href="#">
+                        <small>新的用户？</small>
+                    </a> | <a href="{{ url_for('auth.register') }}">注册一个账号</a>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

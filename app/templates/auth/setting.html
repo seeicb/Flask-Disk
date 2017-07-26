@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% import "auth/wtf.html" as wtf %}
+{% block page_content %}
+
+
+    <h1>编辑个人资料</h1>
+
+<div class="col-md-4">
+    {{ wtf.quick_form(form,form_type="horizontal") }}
+</div>
+{% endblock %}

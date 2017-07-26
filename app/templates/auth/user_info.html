@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+	<div class="row clearfix">
+		<div class="col-md-2 column">
+		</div>
+		<div class="col-md-8 column">
+        <h1>Hello,{{ current_user.username }}</h1>
+            {% if userobj.real_name %}<p>姓名：{{ userobj.real_name|e }}</p>{% endif %}
+            {% if userobj.address %}<p>地址：{{ userobj.address }}</p>{% endif %}
+            {% if userobj.phone_number %}<p>手机：{{ userobj.phone_number }}</p>{% endif %}
+			{% if userobj.sex %}<p>性别：{{ userobj.sex }}</p>{% endif %}
+            {% if userobj.about_me %}<p>自我简介：{{ userobj.about_me|e }}</p>{% endif %}
+		</div>
+		<div class="col-md-2 column">
+		</div>
+	</div>
+{% endblock %}

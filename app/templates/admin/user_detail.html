@@ -1,0 +1,133 @@
+{% extends "admin_base.html" %}
+{% block metas %}
+    {{ super() }}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/sweetalert.css') }}">
+    {{ super() }}
+
+{% endblock %}
+
+{% block page_content %}
+
+    <div class="row clearfix">
+        <div class="col-md-8 col-sm-offset-2 ">
+            <div class="btn-group btn-group-justified">
+                {% if userobj.is_lock==False %}
+                <a id="block" href="#" class="btn btn-primary  " role="button">锁定账户</a>
+                {% else %}
+                <a id="bunlock" href="#" class="btn btn-primary  " role="button">解锁账户</a>
+                {% endif %}
+                <a id="bchangepwd" href="{{ url_for("admin.change_pass",id=userobj.user_id) }}" class="btn btn-success  " role="button">修改密码</a>
+            </div>
+            <br>
+            <br>
+            <h3>用户名：{{ userobj.username }}</h3>
+            <p>管理员：{{ userobj.is_admin|e }}</p>
+            <p>锁定：{{ userobj.is_lock|e }}</p>
+            {% if userobj.real_name %}<p>姓名：{{ userobj.real_name|e }}</p>{% endif %}
+            {% if userobj.address %}<p>地址：{{ userobj.address }}</p>{% endif %}
+            {% if userobj.phone_number %}<p>手机：{{ userobj.phone_number }}</p>{% endif %}
+			{% if userobj.sex %}<p>性别：{{ userobj.sex }}</p>{% endif %}
+            {% if userobj.about_me %}<p>自我简介：{{ userobj.about_me|e }}</p>{% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/sweetalert.min.js') }}"></script>
+    <script>
+            function countDown(url) {
+                console.log(url);
+                if (url=='index') {
+                    setTimeout(function(){
+                        location.href = '{{ url_for('admin.index') }}';
+                    }, 1200);
+
+                }
+                else {
+                    setTimeout(function(){
+                        location.href = '{{ url_for('admin.user_detail',id=userobj.user_id) }}';
+                    }, 1200);
+                }
+            }
+            $(document).ready(function () {
+            $('#block').click(function () {
+                {% if userobj.is_admin==False %}
+                swal({
+                        title: "您确定要锁定此用户吗？",
+                        text:"已锁定的用户将不能登录",
+                        type: "warning",
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        confirmButtonColor: "#ff2125"
+                    }
+                    , function () {
+                        var csrftoken = $('meta[name=csrf-token]').attr('content')
+                        $.ajaxSetup({
+                            beforeSend: function (xhr, settings) {
+                                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                                }
+                            }
+                        });
+                        $.ajax({
+                            url: "{{ url_for('admin.lock_user') }}",
+                            type: "POST",
+                            data: {"id": {{ userobj.user_id }}}
+                        }).done(function (data) {
+                            swal("锁定成功!", "已锁定用户！", "success");
+                            countDown('url')
+                        }).error(function (data) {
+                            swal("操作失败", "操作失败了!", "error");
+                        });
+                    })
+                ;
+                {% else %}
+                swal({
+                        title: "管理员账户不可锁定",
+                        type: "warning"
+
+                    });
+                {% endif %}
+            });
+            $('#bunlock').click(function () {
+                swal({
+                        title: "您确定要解锁此用户吗？",
+                        text:"解锁后用户讲将可以登录",
+                        type: "warning",
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        confirmButtonColor: "#ff2125"
+                    }
+                    , function () {
+                        var csrftoken = $('meta[name=csrf-token]').attr('content')
+                        $.ajaxSetup({
+                            beforeSend: function (xhr, settings) {
+                                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                                }
+                            }
+                        });
+                        $.ajax({
+                            url: "{{ url_for('admin.unlock') }}",
+                            type: "POST",
+                            data: {"id": {{ userobj.user_id }}}
+                        }).done(function (data) {
+                            swal("操作成功!", "已解锁用户！", "success");
+                            countDown('url')
+                        }).error(function (data) {
+                            swal("操作失败", "操作失败了!", "error");
+                        });
+                    })
+                ;
+            });
+        })
+    </script>
+{% endblock %}
